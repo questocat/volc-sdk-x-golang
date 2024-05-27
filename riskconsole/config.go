@@ -18,7 +18,7 @@ type RiskConsole struct {
 func NewRiskConsoleInstance() *RiskConsole {
 	instance := &RiskConsole{
 		Client: base.NewClient(ServiceInfoMap[base.RegionCnNorth1], ApiInfoList),
-		retry:  true,
+		retry:  false,
 	}
 	return instance
 }

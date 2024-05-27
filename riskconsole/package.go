@@ -3,6 +3,7 @@ package riskconsole
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -28,6 +29,10 @@ func (p *RiskConsole) PushTrafficRiskData(req *PushTrafficRiskDataRequest) (*Pus
 		return nil, err
 	}
 
+	if uploadIdResp.ErrCode != 0 {
+		return result, errors.New(fmt.Sprintf("GetUploadId error: %s", uploadIdResp.ErrMsg))
+	}
+
 	getUploadedPartListRequest := GetUploadedPartListRequest{
 		AppId:    req.AppId,
 		UploadId: uploadIdResp.Data.UploadId,
@@ -36,6 +41,10 @@ func (p *RiskConsole) PushTrafficRiskData(req *PushTrafficRiskDataRequest) (*Pus
 	uploadedPartListResp, err := p.GetUploadedPartList(getUploadedPartListRequest)
 	if err != nil {
 		return nil, err
+	}
+
+	if uploadedPartListResp.ErrCode != 0 {
+		return result, errors.New(fmt.Sprintf("GetUploadedPartList error: %s", uploadedPartListResp.ErrMsg))
 	}
 
 	partListMap := make(map[int]struct{})
@@ -91,9 +100,8 @@ func (p *RiskConsole) PushTrafficRiskData(req *PushTrafficRiskDataRequest) (*Pus
 			return nil, err
 		}
 
-		if uploadFileResponse.ErrCode != "0" {
-			result.Success = false
-			return result, err
+		if uploadFileResponse.ErrCode != 0 {
+			return result, errors.New(fmt.Sprintf("UploadFile error: %s", uploadFileResponse.ErrMsg))
 		}
 	}
 
@@ -110,12 +118,10 @@ func (p *RiskConsole) PushTrafficRiskData(req *PushTrafficRiskDataRequest) (*Pus
 		return nil, err
 	}
 
-	if completeUploadFileResult.ErrCode != "0" {
-		result.Success = false
-		return result, err
+	if completeUploadFileResult.ErrCode != 0 {
+		return nil, errors.New(fmt.Sprintf("CompleteUploadFile error: %s", completeUploadFileResult.ErrMsg))
 	}
 
-	result.Success = true
 	result.PackageId = completeUploadFileResult.Data
 
 	return result, nil

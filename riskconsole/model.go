@@ -15,8 +15,7 @@ type PushTrafficRiskDataRequest struct {
 }
 
 type PushTrafficRiskDataResponse struct {
-	Success   bool
-	PackageId string
+	PackageId int
 }
 
 type FileInfo struct {
@@ -36,9 +35,9 @@ type GetUploadIdRequest struct {
 
 type CommonResponse struct {
 	LogId     string `json:"log_id"`
-	ErrCode   string `json:"err_code"`
+	ErrCode   int    `json:"err_code"`
 	ErrMsg    string `json:"err_msg"`
-	Timestamp int64  `json:"timestamp"`
+	Timestamp int    `json:"timestamp"`
 }
 
 type GetUploadIdResponse struct {
@@ -92,7 +91,7 @@ type CompleteUploadFileRequest struct {
 
 type CompleteUploadFileResponse struct {
 	CommonResponse
-	Data string `json:"data"`
+	Data int `json:"data"`
 }
 
 func UnmarshalResultInto(data []byte, result interface{}) error {
